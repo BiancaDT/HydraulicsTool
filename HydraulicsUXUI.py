@@ -1,5 +1,6 @@
 # import statement for GUI
 from tkinter import *
+import tkinter as tk
 from tkinter.ttk import *
 from tkinter import ttk
 import PyPDF2
@@ -7,7 +8,11 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 from fpdf import FPDF
 import os
 import fnmatch
+import pandas as pd
 
+from tkinter import filedialog
+
+#for reading excel
 
 #Window settings
 window = Tk()
@@ -26,6 +31,7 @@ txt.focus()
 
 #List of answers
 answers = []
+paths = []
 
 #Buttons
 def clicked():
@@ -292,12 +298,32 @@ if __name__ == '__main__':
     for file_name in os.listdir('C:/Users/BIDN/PycharmProjects'):
         if fnmatch.fnmatch(file_name, '*0001-*.pdf'):
             print('File name: ',file_name)
-    paths = []
     #merge_pdfs(paths, output='mergedPDF.pdf')
 
 btn = Button(window, text="Print Config", command=lambda : merge_pdfs(paths, output='HydraulicPartsMerged.pdf'))
 
 btn.grid(column=8, row=50)
+
+def getExcel():
+    global df
+
+    import_file_path = filedialog.askopenfilename()
+    df = pd.read_excel(import_file_path)
+    print(df)
+
+
+browseButton_Excel = tk.Button(text='Import Excel File', command=getExcel, bg='green', fg='white',
+                               font=('helvetica', 12, 'bold'))
+
+fields = ['Part no', 'Category']
+
+df = pd.read_excel(r'C:/Users/BIDN/PycharmProjects/Hydraulics.xlsx', sheet_name='Second proposal', index=False, skipinitialspace=True, usecols=fields)
+df = df.dropna(axis=0, how='all', thresh=None, subset=None, inplace=False)
+print(df)
+
+browseButton_Excel.grid(column=8, row=53)
+
+
 
 #Put all changes above this line
 #Show GUI, must be the final statement
