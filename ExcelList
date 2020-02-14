@@ -38,14 +38,10 @@ Maker_safety = rslt_safety['Maker choice'].tolist()
 Maker_exh = rslt_exh_valve['Maker choice'].tolist()
 print('\nMaker list from exh :\n', Maker_exh)
 
+list_ofLists = [Maker_filter, Maker_gear, Maker_ths, Maker_el, Maker_safety, Maker_exh]
+print('\nLIst of list from exh :\n', list_ofLists[1])
 #GUI
 
-#from tkinter import *
-#master = Tk()
-#variable = StringVar(master)
-#w = OptionMenu(master, variable, *Maker_filter)
-#w.pack()
-#
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
@@ -56,7 +52,7 @@ root = tk.Tk()
 mynumber = tk.StringVar()
 for c in categories:
     ttk.Label(text=c, relief=tk.RIDGE, width=15).grid(row=r,column=0)
-    ttk.Combobox(root, textvariable = mynumber, values=Maker_filter, width=10).grid(row=r,column=1)
+    ttk.Combobox(root, textvariable = mynumber, values=list_ofLists[r], width=10).grid(row=r,column=1)
     r = r + 1
 
 mainloop()
