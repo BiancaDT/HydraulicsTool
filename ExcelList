@@ -1,0 +1,62 @@
+import pandas as pd
+
+#Read the file
+df = pd.read_excel(r'C:/Users/BIDN/PycharmProjects/Hydraulics.xlsx', sheet_name='Third proposal', skipinitialspace=True)
+
+#Drop all NaN values
+df = df.dropna(axis=0, how='all', thresh=None, subset=None, inplace=False)
+df.reset_index(drop=True)
+
+PartnoList = df['Part no']
+
+filters = ['ME-Filter']
+hps_gear = ['HPS gear driven']
+hps_ths2 = ['HPS gear driven - THS2']
+hps_el = ['HPS el driven']
+safety = ['Safety / akkumulator block']
+exh_valve = ['HCU / Exhaust valve type']
+
+# selecting rows based on condition
+rslt_filters = df[df['Category'].isin(filters)]
+rslt_gear = df[df['Category'].isin(hps_gear)]
+rslt_ths2r = df[df['Category'].isin(hps_ths2)]
+rslt_elgear = df[df['Category'].isin(hps_el)]
+rslt_safety = df[df['Category'].isin(safety)]
+rslt_exh_valve = df[df['Category'].isin(exh_valve)]
+
+print('\nFilter dataframe :\n', rslt_filters)
+print('\nHPS dataframe :\n', rslt_gear)
+
+#lists of makers
+#assign to radio buttons or drodown menu
+Maker_filter = rslt_filters['Maker choice'].tolist()
+print('\nMaker_filter from gears :\n', Maker_filter)
+Maker_gear = rslt_gear['Maker choice'].tolist()
+Maker_ths = rslt_ths2r['Maker choice'].tolist()
+Maker_el = rslt_elgear['Maker choice'].tolist()
+Maker_safety = rslt_safety['Maker choice'].tolist()
+Maker_exh = rslt_exh_valve['Maker choice'].tolist()
+print('\nMaker list from exh :\n', Maker_exh)
+
+#GUI
+
+#from tkinter import *
+#master = Tk()
+#variable = StringVar(master)
+#w = OptionMenu(master, variable, *Maker_filter)
+#w.pack()
+#
+from tkinter import *
+import tkinter as tk
+from tkinter import ttk
+
+categories = ['ME-Filter','HPS gear driven','HPS gear driven - THS2','HPS el driven','Safety / akkumulator block','HCU / Exhaust valve type']
+r = 0
+root = tk.Tk()
+mynumber = tk.StringVar()
+for c in categories:
+    ttk.Label(text=c, relief=tk.RIDGE, width=15).grid(row=r,column=0)
+    ttk.Combobox(root, textvariable = mynumber, values=Maker_filter, width=10).grid(row=r,column=1)
+    r = r + 1
+
+mainloop()
