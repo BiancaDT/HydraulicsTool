@@ -9,6 +9,7 @@ df.reset_index(drop=True)
 
 PartnoList = df['Part no']
 
+#setting the labels to look for
 filters = ['ME-Filter']
 hps_gear = ['HPS gear driven']
 hps_ths2 = ['HPS gear driven - THS2']
@@ -40,19 +41,56 @@ print('\nMaker list from exh :\n', Maker_exh)
 
 list_ofLists = [Maker_filter, Maker_gear, Maker_ths, Maker_el, Maker_safety, Maker_exh]
 print('\nLIst of list from exh :\n', list_ofLists[1])
+
 #GUI
 
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 
+root = tk.Tk()
+root.title("Hydraulics GUI")
+#root.geometry('200x200')
+#Categories to look for & counter initiation
 categories = ['ME-Filter','HPS gear driven','HPS gear driven - THS2','HPS el driven','Safety / akkumulator block','HCU / Exhaust valve type']
 r = 0
-root = tk.Tk()
-mynumber = tk.StringVar()
+
+FilterVar= tk.StringVar()
+GearVar= tk.StringVar()
+thsVar= tk.StringVar()
+elVar= tk.StringVar()
+safetyVar= tk.StringVar()
+exhVar= tk.StringVar()
+
+list_variables = [FilterVar, GearVar, thsVar, elVar, safetyVar, exhVar]
+
+def clickFilters():
+    list_variables.get()
+
 for c in categories:
     ttk.Label(text=c, relief=tk.RIDGE, width=15).grid(row=r,column=0)
-    ttk.Combobox(root, textvariable = mynumber, values=list_ofLists[r], width=10).grid(row=r,column=1)
+    categoriesParts = ttk.Combobox(root, textvariable = list_variables[r], values=list_ofLists[r],width=10, state="readonly").grid(row=r,column=1)
     r = r + 1
+
+#List of answers
+answers = []
+
+#PDFs: read selection from answers, then look what file nr it is and look for that in directory
+
+def merge_pdfs():
+    answers.append(FilterVar.get())
+    answers.append(GearVar.get())
+    answers.append(thsVar.get())
+    answers.append(elVar.get())
+    answers.append(safetyVar.get())
+    answers.append(exhVar.get())
+    print("ME-Filter: ", answers[0], ", HPS: ", answers[1], ", Exhaust valves: ", answers[2])
+    print(answers)
+    answers.clear()
+
+browseButton_Excel = tk.Button(text='Print Config', command=merge_pdfs, bg='green', fg='white')
+browseButton_Excel.grid(column=2, row=50)
+
+answers.clear()
 
 mainloop()
