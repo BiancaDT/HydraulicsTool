@@ -1,0 +1,149 @@
+import pandas as pd
+from collections import OrderedDict
+
+#Read the file
+df = pd.read_excel(r'C:/Users/BIDN/PycharmProjects/Hydraulics.xlsx', sheet_name='Third proposal', skipinitialspace=True)
+
+#Drop all NaN values
+df = df.dropna(axis=0, how='all', thresh=None, subset=None, inplace=False)
+df.reset_index(drop=False)
+
+PartnoList = df['Part no']
+MakersList = df['Maker choice']
+
+#setting the labels to look for
+
+list_of_HPS_types = ['HPS gear driven','HPS gear driven - THS2','HPS el driven']
+
+#Groups by column for group, if it has at least 1 item
+groups_parts = df.groupby(['Group', 'Category'])
+groupsList = []
+groupGroup = []
+
+#for name, group in groups_parts:
+ #   print("Group: ", name)
+  #  print("-" * 27)
+   # print(group, end="\n\n")
+    #print("-" * 27)
+    #print("Name of group ", name[1])
+    #groupsList.append(name[1])
+    #groupGroup.append(group)
+
+#groupby_regiment = df['Maker choice'].groupby(df['Category'])
+
+listGRoupmakers = df['Maker choice'].groupby(df['Group']).apply(list).reset_index(name='Brands')
+listMakers = listGRoupmakers['Brands'].tolist()
+#print("listMakers", listMakers)
+
+#---------GUI-----------
+
+from tkinter import *
+import tkinter as tk
+from tkinter import ttk
+
+root = tk.Tk()
+root.title("Hydraulics GUI")
+
+#categories = ['ME-Filter','HPS','Safety / akkumulator block','HCU / Exhaust valve type']
+categories = df['Category'].unique().tolist()
+
+for (i, item) in enumerate(categories):
+    if "HPS" in item:
+        categories[i] = "HPS"
+
+categories = pd.DataFrame(categories, columns =['Category'])
+categories = categories['Category'].unique().tolist()
+
+#Dictionary to dynamically declare variables
+
+d={}
+listIndexVariables = []
+listVariables = []
+XVariables = []
+for x in range(len(listMakers)):
+        d["Var{0}".format(x)] = tk.StringVar()
+        XVariables.append(d)
+
+for key, value in d.items():
+        temp = [key, value]
+        listVariables.append(temp[1])
+        #listIndexVariables.append(temp[0])
+print("listIndexVariables", listIndexVariables)
+
+#list_variables = [FilterVar, GearVar, thsVar, elVar, safetyVar, exhVar,exhVar]
+
+r = 0
+answers = []
+for c in categories:
+    ttk.Label(text=c, relief=tk.RIDGE, width=15).grid(row=r,column=0)
+    categoriesParts = ttk.Combobox(root, textvariable = listVariables[r], values=listMakers[r],width=10, state="readonly").grid(row=r,column=1)
+    r = r + 1
+
+partNoList = []
+
+
+zippedList = list(zip(PartnoList, MakersList))
+#print(zippedList[0][1])
+#for i,j in zip(PartnoList, MakersList):
+    #print(i, j)
+
+
+Makers = df['Maker choice']
+#df.set_index("Part no", inplace = True)
+#print(df)
+#print(Makers._get_index_resolvers())
+
+#DictMaker = df['Maker choice'].get_index('Part no').to_dict()
+
+
+q = 0
+for i,j in zippedList:
+    partNoList.append(zippedList[q][0])
+    q = q + 1
+print("partNoList", partNoList)
+#PDFs: read selection from answers, then look what file nr it is and look for that in directory
+
+############################
+def checkKey(zippedDict, key):
+    if key in zippedDict.keys():
+        print("Present, ", end=" ")
+        print("value =", zippedDict[key])
+    else:
+        print("Not present")
+
+zippedDict = OrderedDict(zip(PartnoList, MakersList))
+dict = {'a': 100, 'b': 200, 'c': 300}
+
+key = '3060001-1.1'
+checkKey(zippedDict, key)
+
+########################
+
+myseries = pd.Series(df['Maker choice'])
+listK = ['Eaton', 'Hydac']
+
+#print(myseries[myseries == listK])
+
+NewlistK = df['Maker choice'].str.extract(f"({'|'.join(listK)})")
+#print(NewlistK)
+answersIndex = []
+
+def merge_pdfs():
+    for x in range(len(listMakers)):
+        answers.append(listVariables[x].get())
+    indexMakerChoice = df.index[df['Maker choice'].isin(answers)].tolist()
+    answersIndex.append(indexMakerChoice)
+    print("answers", answers)
+    print("answersIndex", answersIndex)
+    answers.clear()
+    answersIndex.clear()
+
+print(partNoList.index)
+
+browseButton_Excel = tk.Button(text='Print Config', command=merge_pdfs, bg='green', fg='white')
+browseButton_Excel.grid(column=2, row=50)
+
+answers.clear()
+answersIndex.clear()
+
+mainloop()
