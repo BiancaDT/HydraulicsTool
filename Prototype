@@ -1,5 +1,6 @@
 import pandas as pd
 from collections import OrderedDict
+import numpy as np
 
 #Read the file
 df = pd.read_excel(r'C:/Users/BIDN/PycharmProjects/Hydraulics.xlsx', sheet_name='Third proposal', skipinitialspace=True)
@@ -33,7 +34,6 @@ groupGroup = []
 
 listGRoupmakers = df['Maker choice'].groupby(df['Group']).apply(list).reset_index(name='Brands')
 listMakers = listGRoupmakers['Brands'].tolist()
-#print("listMakers", listMakers)
 
 #---------GUI-----------
 
@@ -81,7 +81,6 @@ for c in categories:
 
 partNoList = []
 
-
 zippedList = list(zip(PartnoList, MakersList))
 #print(zippedList[0][1])
 #for i,j in zip(PartnoList, MakersList):
@@ -119,24 +118,17 @@ checkKey(zippedDict, key)
 
 ########################
 
-myseries = pd.Series(df['Maker choice'])
-listK = ['Eaton', 'Hydac']
-
-#print(myseries[myseries == listK])
-
-NewlistK = df['Maker choice'].str.extract(f"({'|'.join(listK)})")
 #print(NewlistK)
-answersIndex = []
 
 def merge_pdfs():
     for x in range(len(listMakers)):
         answers.append(listVariables[x].get())
     indexMakerChoice = df.index[df['Maker choice'].isin(answers)].tolist()
-    answersIndex.append(indexMakerChoice)
+    print("indexMakerChoice", indexMakerChoice)
     print("answers", answers)
-    print("answersIndex", answersIndex)
+    listPartNo = df.loc[indexMakerChoice, 'Part no'].tolist()
+    print(listPartNo)
     answers.clear()
-    answersIndex.clear()
 
 print(partNoList.index)
 
@@ -144,6 +136,6 @@ browseButton_Excel = tk.Button(text='Print Config', command=merge_pdfs, bg='gree
 browseButton_Excel.grid(column=2, row=50)
 
 answers.clear()
-answersIndex.clear()
+#answersIndex.clear()
 
 mainloop()
