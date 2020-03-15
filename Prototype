@@ -31,7 +31,12 @@ listMakers = listGRoupmakers['Brands'].tolist()
 #---------GUI-----------
 
 root = tk.Tk()
+root.resizable(False, False)
 root.title("Hydraulics GUI")
+
+root.iconbitmap('C:/Users/BIDN/PycharmProjects/Hydraulics/LogoMAN.ico')
+#root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='C:/Users/BIDN/PycharmProjects/Hydraulics/LogoMAN.png'))
+#root.iconphoto(True, tk.PhotoImage(file='C:/Users/BIDN/PycharmProjects/Hydraulics/LogoMAN.png'))
 
 categories = df['Category'].unique().tolist()
 
