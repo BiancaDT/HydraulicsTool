@@ -1,6 +1,9 @@
+import glob
+from PyPDF2 import PdfFileReader, PdfFileWriter
 import pandas as pd
-from collections import OrderedDict
-import numpy as np
+from tkinter import *
+import tkinter as tk
+from tkinter import ttk
 
 #Read the file
 df = pd.read_excel(r'C:/Users/BIDN/PycharmProjects/Hydraulics.xlsx', sheet_name='Third proposal', skipinitialspace=True)
@@ -21,30 +24,14 @@ groups_parts = df.groupby(['Group', 'Category'])
 groupsList = []
 groupGroup = []
 
-#for name, group in groups_parts:
- #   print("Group: ", name)
-  #  print("-" * 27)
-   # print(group, end="\n\n")
-    #print("-" * 27)
-    #print("Name of group ", name[1])
-    #groupsList.append(name[1])
-    #groupGroup.append(group)
-
-#groupby_regiment = df['Maker choice'].groupby(df['Category'])
-
 listGRoupmakers = df['Maker choice'].groupby(df['Group']).apply(list).reset_index(name='Brands')
 listMakers = listGRoupmakers['Brands'].tolist()
 
 #---------GUI-----------
 
-from tkinter import *
-import tkinter as tk
-from tkinter import ttk
-
 root = tk.Tk()
 root.title("Hydraulics GUI")
 
-#categories = ['ME-Filter','HPS','Safety / akkumulator block','HCU / Exhaust valve type']
 categories = df['Category'].unique().tolist()
 
 for (i, item) in enumerate(categories):
@@ -67,10 +54,7 @@ for x in range(len(listMakers)):
 for key, value in d.items():
         temp = [key, value]
         listVariables.append(temp[1])
-        #listIndexVariables.append(temp[0])
 print("listIndexVariables", listIndexVariables)
-
-#list_variables = [FilterVar, GearVar, thsVar, elVar, safetyVar, exhVar,exhVar]
 
 r = 0
 answers = []
@@ -82,60 +66,52 @@ for c in categories:
 partNoList = []
 
 zippedList = list(zip(PartnoList, MakersList))
-#print(zippedList[0][1])
-#for i,j in zip(PartnoList, MakersList):
-    #print(i, j)
-
 
 Makers = df['Maker choice']
-#df.set_index("Part no", inplace = True)
-#print(df)
-#print(Makers._get_index_resolvers())
 
-#DictMaker = df['Maker choice'].get_index('Part no').to_dict()
-
-
-q = 0
-for i,j in zippedList:
-    partNoList.append(zippedList[q][0])
-    q = q + 1
-print("partNoList", partNoList)
 #PDFs: read selection from answers, then look what file nr it is and look for that in directory
 
-############################
-def checkKey(zippedDict, key):
-    if key in zippedDict.keys():
-        print("Present, ", end=" ")
-        print("value =", zippedDict[key])
-    else:
-        print("Not present")
+paths = []
 
-zippedDict = OrderedDict(zip(PartnoList, MakersList))
-dict = {'a': 100, 'b': 200, 'c': 300}
-
-key = '3060001-1.1'
-checkKey(zippedDict, key)
-
-########################
-
-#print(NewlistK)
-
-def merge_pdfs():
+def merge_pdfs(paths, output):
     for x in range(len(listMakers)):
         answers.append(listVariables[x].get())
     indexMakerChoice = df.index[df['Maker choice'].isin(answers)].tolist()
     print("indexMakerChoice", indexMakerChoice)
     print("answers", answers)
     listPartNo = df.loc[indexMakerChoice, 'Part no'].tolist()
-    print(listPartNo)
+    print("listPartNo", listPartNo)
+    #for file_name in os.listdir('C:/Users/BIDN/PycharmProjects'):
+    patterns = [s + '.pdf' for s in listPartNo]
+    for pattern in patterns:
+        for fn in glob.glob(pattern):
+            paths.append(fn)
+    print("paths", paths)
     answers.clear()
+
+    ##############PDFS
+    pdf_writer = PdfFileWriter()
+    # pdf_writer.addPage('')
+
+    for path in paths:
+        pdf_reader = PdfFileReader(path)
+        # pdf_reader.addBlankPage()
+        for page in range(pdf_reader.getNumPages()):
+            # Add each page to the writer object
+            pdf_writer.addPage(pdf_reader.getPage(page))
+
+    # Write out the merged PDF
+    with open(output, 'wb') as out:
+        pdf_writer.write(out)
+
+    # Clear the files list after configuring
+    paths.clear()
 
 print(partNoList.index)
 
-browseButton_Excel = tk.Button(text='Print Config', command=merge_pdfs, bg='green', fg='white')
+browseButton_Excel = tk.Button(text='Print Config', command=lambda : merge_pdfs(paths, output='HydraulicPartsMerged.pdf'), bg='green', fg='white')
 browseButton_Excel.grid(column=2, row=50)
 
 answers.clear()
-#answersIndex.clear()
 
 mainloop()
