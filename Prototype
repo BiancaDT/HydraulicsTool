@@ -5,6 +5,7 @@ from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 
+
 #Read the file
 df = pd.read_excel(r'C:/Users/BIDN/PycharmProjects/Hydraulics.xlsx', sheet_name='Third proposal', skipinitialspace=True)
 
@@ -54,20 +55,21 @@ for x in range(len(listMakers)):
 for key, value in d.items():
         temp = [key, value]
         listVariables.append(temp[1])
-print("listIndexVariables", listIndexVariables)
 
 r = 0
 answers = []
+list_of_widgets = []
 for c in categories:
     ttk.Label(text=c, relief=tk.RIDGE, width=15).grid(row=r,column=0)
-    categoriesParts = ttk.Combobox(root, textvariable = listVariables[r], values=listMakers[r],width=10, state="readonly").grid(row=r,column=1)
+    categoriesParts = ttk.Combobox(root, textvariable = listVariables[r], values=listMakers[r],width=10, state="readonly")
+    categoriesParts.grid(row=r,column=1)
+    categoriesParts.set('')
+    list_of_widgets.append(categoriesParts)
     r = r + 1
 
 partNoList = []
 
 zippedList = list(zip(PartnoList, MakersList))
-
-Makers = df['Maker choice']
 
 #PDFs: read selection from answers, then look what file nr it is and look for that in directory
 
@@ -107,11 +109,17 @@ def merge_pdfs(paths, output):
     # Clear the files list after configuring
     paths.clear()
 
-print(partNoList.index)
+def clearComboBox():
+    for widget in list_of_widgets:
+        widget.set('')
+
 
 browseButton_Excel = tk.Button(text='Print Config', command=lambda : merge_pdfs(paths, output='HydraulicPartsMerged.pdf'), bg='green', fg='white')
 browseButton_Excel.grid(column=2, row=50)
-
+browseButton_Clear = tk.Button(text='Clear Config', command=clearComboBox, bg='green', fg='white')
+browseButton_Clear.grid(column=1, row=50)
 answers.clear()
+
+
 
 mainloop()
