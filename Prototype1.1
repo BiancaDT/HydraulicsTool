@@ -6,7 +6,6 @@ from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 
-
 #Read the file
 df = pd.read_excel(r'C:/Users/BIDN/PycharmProjects/Hydraulics.xlsx', sheet_name='Third proposal', skipinitialspace=True)
 
@@ -16,44 +15,36 @@ df.reset_index(drop=False)
 
 PartnoList = df['Part no']
 MakersList = df['Maker choice']
-
-#Groups by column for group
-groups_parts = df.groupby(['Group', 'Category']).apply(list)
-
-#print("groups_parts", groups_parts)
+GroupList = df['Group']
 
 listGRoupmakers = df['Maker choice'].groupby(df['Group']).apply(list).reset_index(name='Brands')
 listMakers = listGRoupmakers['Brands'].tolist()
 
-indexSet = df['Maker choice'].groupby(df['Group']).apply(list).reindex()
-print("indexSet",indexSet)
-
-#listMakers = df['Maker choice'].groupby(df['Category']).apply(list)
-
-#print("listGRoupmakers", listGRoupmakers)
-#print("listMakers", listMakers)
 
 #---------GUI-----------
-
 root = tk.Tk()
 root.resizable(False, False)
 root.title("Hydraulics GUI")
 
 root.iconbitmap('C:/Users/BIDN/PycharmProjects/Hydraulics/LogoMAN.ico')
-#root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='C:/Users/BIDN/PycharmProjects/Hydraulics/LogoMAN.png'))
-#root.iconphoto(True, tk.PhotoImage(file='C:/Users/BIDN/PycharmProjects/Hydraulics/LogoMAN.png'))
 
 categories = df['Category'].unique().tolist()
 
 #Dictionary to dynamically declare variables
 
 d={}
+dInt={}
 listIndexVariables = []
 listVariables = []
+listIntVariables =  []
 XVariables = []
 for x in range(len(listMakers)):
         d["Var{0}".format(x)] = tk.StringVar()
+        dInt["NumVar{0}".format(x)] = tk.StringVar()
         XVariables.append(d)
+        listIndexVariables.append(dInt)
+
+####################PRINT dInt
 
    ###### Name and variable in dictionary
 
@@ -64,14 +55,19 @@ for key, value in d.items():
 r = 0
 answers = []
 list_of_widgets = []
+
+def clearComboBox():
+    for widget in list_of_widgets:
+        widget.set('')
+
 for c in categories:
     ttk.Label(text=c, relief=tk.RIDGE, width=15).grid(row=r,column=0)
     categoriesParts = ttk.Combobox(root, textvariable = listVariables[r], values=listMakers[r],width=10, state="readonly")
     categoriesParts.grid(row=r,column=1)
-    categoriesParts.set('')
     list_of_widgets.append(categoriesParts)
     r = r + 1
 
+list_of_Stuffwidgets = []
 
 partNoList = []
 
@@ -107,21 +103,36 @@ def clickedTC():
     #PDF merge
 paths = []
 maker =df['Maker choice']
+answersInt = []
+answersCat = []
+indexMakerChoice = []
+
+#LIstMakers are already grouped in the proper groups of Excel
+
+def intersection(lst1, lst2):
+    return list(set(lst1) & set(lst2))
 
 def merge_pdfs(paths, output):
+
     for x in range(len(listMakers)):
         answers.append(listVariables[x].get())
-    indexMakerChoice = df.index[df['Maker choice'].isin(answers)].tolist()
-    idx = df.loc[df['Maker choice']]
-
-    listIndex = pd.Index(answers)
-    print("new index", idx)
-
+        answersCat.append(categories[x])
+    ######
+    for x in range(len(answers)):
+        set1 = df.index[df['Maker choice'].isin([answers[x]])].tolist()
+        set2 = df.index[df['Category'].isin([answersCat[x]])].tolist()
+        setInt = intersection(set1, set2)
+        print(set1)
+        print(set2)
+        print("setInt", setInt)
+        for sublist in setInt:
+                indexMakerChoice.append(sublist)
+    #######
     print("indexMakerChoice", indexMakerChoice)
     print("answers", answers)
     listPartNo = df.loc[indexMakerChoice, 'Part no'].tolist()
     print("listPartNo", listPartNo)
-    #for file_name in os.listdir('C:/Users/BIDN/PycharmProjects'):
+
     patterns = [s + '.pdf' for s in listPartNo]
     paths.append("FrontPage.pdf")
     for pattern in patterns:
@@ -129,11 +140,10 @@ def merge_pdfs(paths, output):
             paths.append(fn)
     print("paths", paths)
     answers.clear()
-
+    answersInt.clear()
 
     ##############PDFS
     pdf_writer = PdfFileWriter()
-    #pdf_writer.addPage("FrontPage.pdf")
 
     for path in paths:
         pdf_reader = PdfFileReader(path)
@@ -143,7 +153,6 @@ def merge_pdfs(paths, output):
     # Write out the merged PDF
     with open(output, 'wb') as out:
         pdf_writer.write(out)
-    #pdf_writer.addPage()
     # Clear the files list after configuring
     paths.clear()
     res = txt.get()
@@ -157,17 +166,11 @@ def on_restart(paths, output):
     merge_pdfs(paths, output)
     clickedTC()
 
-#browseButton_Excel = tk.Button(text='Print Config', command=lambda : merge_pdfs(paths, output= str(txt.get()) + '.pdf'), bg='green', fg='white')
 browseButton_Excel = tk.Button(text='Print Config', command=lambda : [clickedTC(), merge_pdfs(paths, output= str(txt.get()) + '.pdf')], bg='green', fg='white')
 
 browseButton_Excel.grid(column=1, row=50)
 browseButton_Clear = tk.Button(text='Clear Config', command=clearComboBox, bg='green', fg='white')
 browseButton_Clear.grid(column=4, row=50)
 answers.clear()
-
-
-#Text input
-#btn = Button(root, text="Save", command=clickedTC)
-#btn.grid(column=4, row=2)
 
 mainloop()
