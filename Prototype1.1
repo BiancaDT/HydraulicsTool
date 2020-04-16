@@ -139,6 +139,7 @@ def merge_pdfs(paths, output):
         for fn in glob.glob(pattern):
             paths.append(fn)
     print("paths", paths)
+    indexMakerChoice.clear()
     answers.clear()
     answersInt.clear()
 
@@ -172,5 +173,6 @@ browseButton_Excel.grid(column=1, row=50)
 browseButton_Clear = tk.Button(text='Clear Config', command=clearComboBox, bg='green', fg='white')
 browseButton_Clear.grid(column=4, row=50)
 answers.clear()
+
 
 mainloop()
