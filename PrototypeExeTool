@@ -35,6 +35,10 @@ fileFront= os.path.join(dirFront, 'Resources', 'Frontpage.pdf')
 dirDiagrams = os.path.dirname(__file__)
 fileDiagrams= os.path.join(dirDiagrams, 'Diagrams')
 
+#Merged Diagrams
+dirMerged = os.path.dirname(__file__)
+fileMerged = os.path.join(dirMerged, 'MergedDiagrams')
+
 #-------------------------------------------------------------------------------------------------------
 
 #Read the database file
@@ -245,6 +249,9 @@ def merge_pdfs(paths, output):
     paths.clear()
     res = txt.get()
 
+#fileMerged
+
+
 def clearComboBox():
     for widget in list_of_widgets:
         widget.set('')
@@ -252,7 +259,7 @@ def clearComboBox():
 def start_batch():
     subprocess.call([r'/MBD_create_BOM_from_file/MBD_create_BOM_from_file.bat'])
 #To be called in button
-printButton_Excel = tk.Button(text='Print Config', command=lambda : [clickedTC(), merge_pdfs(paths, output= str(txt.get()) + '.pdf')], bg='green', fg='white')
+printButton_Excel = tk.Button(text='Print Config', command=lambda : [clickedTC(), merge_pdfs(paths, output= os.path.join(dirMerged, 'MergedDiagrams', str(txt.get()) + '.pdf'))], bg='green', fg='white')
 
 printButton_Excel.grid(column=1, row=50)
 browseButton_Clear = tk.Button(text='Clear Config', command=clearComboBox, bg='green', fg='white')
