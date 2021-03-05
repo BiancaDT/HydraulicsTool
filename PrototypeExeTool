@@ -31,6 +31,10 @@ fileTest= os.path.join(dirTest, 'Resources', 'Test.csv')
 dirFront = os.path.dirname(__file__)
 fileFront= os.path.join(dirFront, 'Resources', 'Frontpage.pdf')
 
+#Diagrams
+dirDiagrams = os.path.dirname(__file__)
+fileDiagrams= os.path.join(dirDiagrams, 'Diagrams')
+
 #-------------------------------------------------------------------------------------------------------
 
 #Read the database file
@@ -184,10 +188,11 @@ def merge_pdfs(paths, output):
     listGroup = df.loc[indexMakerChoice, 'Group'].tolist()
     print("listGroup", listGroup)
 
-    patterns = [s + '.pdf' for s in listPartNo]
-    paths.append("FrontPage.pdf")
+    patterns = ['/' + s + '.pdf' for s in listPartNo]
+    paths.append(fileFront)
     for pattern in patterns:
-        for fn in glob.glob(pattern):
+        for fn in glob.glob(fileDiagrams + pattern):
+            print("fn", fn)
             paths.append(fn)
     print("paths", paths)
 
