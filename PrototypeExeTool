@@ -213,12 +213,14 @@ def merge_pdfs(paths, output):
 
     TC_nr = str(txt.get())
 
+    delimiterExcel= "sep=;"
+
     lst2bat = ['kit',TC_nr]
 
     #Testing database
     testData = pd.DataFrame(listPartNo)
 
-    firstRow = pd.DataFrame(columns=lst2bat)
+    firstRow = pd.DataFrame(columns=[delimiterExcel, lst2bat])
 
     dfcsv = pd.DataFrame(columns=csvHeader)
 
@@ -264,9 +266,9 @@ def start_batch():
     subprocess.call([fileBat])
 #To be called in button
 printButton_Excel = tk.Button(text='Print Config', command=lambda : [clickedTC(), merge_pdfs(paths, output= os.path.join(dirMerged, 'MergedDiagrams', str(txt.get()) + '.pdf'))], bg='green', fg='white')
-printButton_Excel.grid(column=1, row=50)
+printButton_Excel.grid(column=0, row=50)
 browseButton_Clear = tk.Button(text='Clear Config', command=clearComboBox, bg='green', fg='white')
-browseButton_Clear.grid(column=3, row=50)
+browseButton_Clear.grid(column=1, row=50)
 browseButton_TC = tk.Button(text='Send to TC', command=start_batch, bg='blue', fg='white')
 browseButton_TC.grid(column=4, row=50)
 answers.clear()
