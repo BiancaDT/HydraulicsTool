@@ -21,7 +21,7 @@ fileExcelTC= os.path.join(dirExcelTC, 'MBD_create_BOM_from_file', 'Input','Input
 
 #Database file
 dirExcelDatabase = os.path.dirname(__file__)
-fileExcelDatabase= os.path.join(dirExcelDatabase, 'Resources','Excel_Database','Hydraulics.xlsx')
+fileExcelDatabase= os.path.join(dirExcelDatabase, 'Resources','Excel_Database','TChydraulics.xlsx')
 
 #Test file
 dirTest = os.path.dirname(__file__)
@@ -33,7 +33,7 @@ fileFront= os.path.join(dirFront, 'Resources', 'Frontpage.pdf')
 
 #Diagrams
 dirDiagrams = os.path.dirname(__file__)
-fileDiagrams= os.path.join(dirDiagrams, 'Diagrams')
+fileDiagrams= os.path.join(dirDiagrams, 'Diagrams', 'HydraulicsDiagrams')
 
 #Merged Diagrams
 dirMerged = os.path.dirname(__file__)
@@ -76,7 +76,7 @@ d={}
 dInt={}
 listIndexVariables = []
 listVariables = []
-listIntVariables =  []
+listIntVariables = []
 XVariables = []
 for x in range(len(listMakers)):
         d["Var{0}".format(x)] = tk.StringVar()
@@ -99,8 +99,8 @@ def clearComboBox():
         widget.set('')
 
 for c in categories:
-    ttk.Label(text=c, relief=tk.RIDGE, width=15).grid(row=r,column=0)
-    categoriesParts = ttk.Combobox(root, textvariable = listVariables[r], values=listMakers[r],width=10, state="readonly")
+    ttk.Label(text=c, relief=tk.RIDGE, width=30).grid(row=r,column=0)
+    categoriesParts = ttk.Combobox(root, textvariable = listVariables[r], values=listMakers[r],width=50, state="readonly")
     categoriesParts.grid(row=r,column=1)
     list_of_widgets.append(categoriesParts)
     r = r + 1
@@ -266,11 +266,11 @@ def start_batch():
     subprocess.call([fileBat])
 #To be called in button
 printButton_Excel = tk.Button(text='Print Config', command=lambda : [clickedTC(), merge_pdfs(paths, output= os.path.join(dirMerged, 'MergedDiagrams', str(txt.get()) + '.pdf'))], bg='green', fg='white')
-printButton_Excel.grid(column=0, row=50)
+printButton_Excel.grid(column=0, row=70)
 browseButton_Clear = tk.Button(text='Clear Config', command=clearComboBox, bg='green', fg='white')
-browseButton_Clear.grid(column=1, row=50)
+browseButton_Clear.grid(column=1, row=70)
 browseButton_TC = tk.Button(text='Send to TC', command=start_batch, bg='blue', fg='white')
-browseButton_TC.grid(column=4, row=50)
+browseButton_TC.grid(column=4, row=70)
 answers.clear()
 
 mainloop()
