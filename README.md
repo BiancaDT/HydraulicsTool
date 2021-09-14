@@ -1,3 +1,3 @@
 # HydraulicsTool
 
-Working model, not yet refactored or modularized.
+Fully working model as per department requirements, not yet refactored or modularized.
